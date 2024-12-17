@@ -40,9 +40,9 @@ public:
     * @brief Initialize ColorMap using an image file
     *
     * @param filepath path to the png file to load the color map with
-    * @param color_index unordered_map containing all of the numbers that each color should map to
+    * @param color_mapping unordered_map containing all of the numbers that each color should map to
     */
-  ColorMap(const std::string& filepath, const std::unordered_map<cv::Vec3b, int> &color_index);
+  ColorMap(const std::string& filepath, const std::unordered_map<cv::Vec3b, int> &color_mapping);
 
   /**
     * @brief Load ColorMap using an image file
@@ -55,9 +55,9 @@ public:
     * @brief Load ColorMap using an image file
     *
     * @param filepath path to the png file to load the color map with
-    * @param color_index unordered_map containing all of the numbers that each color should map to
+    * @param color_mapping unordered_map containing all of the numbers that each color should map to
     */
-  void load(const std::string& filepath, const std::unordered_map<cv::Vec3b, int> &color_index);
+  void load(const std::string& filepath, const std::unordered_map<cv::Vec3b, int> &color_mapping);
 
   /**
     * @brief Get the color map associated with the image
@@ -71,21 +71,21 @@ public:
     *
     * @return vector of cv::Vec3b of which color each number represents
     */
-  const std::vector<cv::Vec3b> get_color_mapping();
+  const std::unordered_map<int, cv::Vec3b> get_color_index();
 
   /**
     * @brief Get the color mapping (int to color)
     *
     * @return unordered map mapping colors to their respective numbers
     */
-  const std::unordered_map<cv::Vec3b, int> get_color_index();
+  const std::unordered_map<cv::Vec3b, int> get_color_mapping();
 
   /**
-    * @brief recolor the color map with the provided color_index
+    * @brief recolor the color map with the provided color_mapping
     *
-    * @param color_index unordered_map containing all of the numbers that each color should map to
+    * @param color_mapping unordered_map containing all of the numbers that each color should map to
     */
-  void recolor(const std::unordered_map<cv::Vec3b, int> color_index);
+  void recolor(const std::unordered_map<cv::Vec3b, int> color_mapping);
 
   bool operator==(const ColorMap& other) const;
 
@@ -93,8 +93,8 @@ private:
   std::string filepath_; ///< Path to the input image file
   cv::Mat image_; ///< OpenCV matrix storing the image
   std::vector<std::vector<int>> color_map_; ///< 2D int array storing each type of pixel
-  std::vector<cv::Vec3b> color_mapping_; ///< Mappings from int in array to BGR color
-  std::unordered_map<cv::Vec3b, int> color_index_; ///< int number associated with each color
+  std::unordered_map<int, cv::Vec3b> color_index_; ///< Mappings from int in array to BGR color
+  std::unordered_map<cv::Vec3b, int> color_mapping_; ///< int number associated with each color
 };
 
 #endif // IMAGE_READER_H
