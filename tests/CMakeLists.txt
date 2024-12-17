@@ -14,11 +14,12 @@ add_library(GTest::GTest INTERFACE IMPORTED)
 target_link_libraries(GTest::GTest INTERFACE gtest_main)
 
 # Image input/output tests
-
 target_link_libraries(image_tests
   PRIVATE
   GTest::GTest
   image
 )
+
+file(COPY ${CMAKE_SOURCE_DIR}/tests/img DESTINATION ${CMAKE_BINARY_DIR}/tests)
 
 add_test(image_gtests image_tests)
