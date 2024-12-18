@@ -106,7 +106,9 @@ std::vector<std::vector<double>> find_nucleus_force(std::vector<std::vector<int>
   for (int y = 0; y < force.size(); ++y) {
     for (int x = 0; x < force[0].size(); ++x) {
       f[y][x] = force[y][x];
-      if (cell[y][x] == 1 && force[y][x] != 0) q.push(make_coord(y, x, dist[y][x]));
+      if (cell[y][x] == 1 && force[y][x] != 0) {
+        q.push(make_coord(y, x, dist[y][x]));
+      }
     }
   }
 
@@ -114,6 +116,8 @@ std::vector<std::vector<double>> find_nucleus_force(std::vector<std::vector<int>
     int y = q.top().second.first;
     int x = q.top().second.second;
     q.pop();
+
+    if (f[y][x] == 0) continue;
 
     int min_dist = INT_MAX;
     int count = 0;
@@ -149,7 +153,6 @@ std::vector<std::vector<double>> find_nucleus_force(std::vector<std::vector<int>
       }
     }
 
-    dist[y][x] = INT_MAX; // ignore this pixel from now on
     f[y][x] = 0;
   }
 
