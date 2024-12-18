@@ -2,3 +2,6 @@
 build/
 Testing/
 .cache/
+
+# MacOS files
+.DS_Store
