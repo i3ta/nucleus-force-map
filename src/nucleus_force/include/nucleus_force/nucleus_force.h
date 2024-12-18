@@ -38,6 +38,15 @@ std::vector<std::vector<int>> find_nucleus_force(std::vector<std::vector<int>> c
 std::vector<std::vector<int>> find_nucleus_force(std::vector<std::vector<int>> cell, std::vector<std::vector<int>> force);
 
 /**
+ * @brief Create a coord and distance pair
+ *
+ * @param y y coordinate
+ * @param x x coordinate
+ * @param d distance
+ */
+inline std::pair<std::pair<int, int>, int> make_coord(int y, int x, int d);
+
+/**
   * @brief Output the array as a csv at filepath
   *
   * @param filepath string of the filepath for the csv
