@@ -11,7 +11,7 @@ TEST(NucleusForce_FindBoundaryTests, BlankMapHasNoBoundary) {
   cell[2] = {0, 0, 0, 0};
   cell[3] = {0, 0, 0, 0};
 
-  std::vector<std::vector<int>> boundary = find_boundary(cell);
+  std::vector<std::vector<int>> boundary = find_boundary(cell, cell);
 
   ASSERT_EQ(boundary.size(), 4);
   ASSERT_EQ(boundary[0].size(), 4);
@@ -30,7 +30,13 @@ TEST(NucleusForce_FindBoundaryTests, MapWithDotHasBoundary) {
   cell[2] = {0, 1, 1, 0};
   cell[3] = {0, 0, 0, 0};
 
-  std::vector<std::vector<int>> boundary = find_boundary(cell);
+  std::vector<std::vector<int>> nucleus(4, std::vector<int>(4));
+  nucleus[0] = {0, 0, 0, 0};
+  nucleus[1] = {0, 0, 0, 0};
+  nucleus[2] = {0, 0, 0, 0};
+  nucleus[3] = {0, 0, 0, 0};
+
+  std::vector<std::vector<int>> boundary = find_boundary(cell, nucleus);
 
   ASSERT_EQ(boundary.size(), 4);
   ASSERT_EQ(boundary[0].size(), 4);
@@ -49,15 +55,21 @@ TEST(NucleusForce_FindBoundaryTests, MapHasCellWithoutBoundary) {
   cell[2] = {0, 1, 1, 1};
   cell[3] = {0, 1, 1, 1};
 
-  std::vector<std::vector<int>> boundary = find_boundary(cell);
+  std::vector<std::vector<int>> nucleus(4, std::vector<int>(4));
+  nucleus[0] = {0, 0, 0, 0};
+  nucleus[1] = {0, 0, 0, 0};
+  nucleus[2] = {0, 0, 0, 0};
+  nucleus[3] = {0, 0, 0, 0};
+
+  std::vector<std::vector<int>> boundary = find_boundary(cell, nucleus);
 
   ASSERT_EQ(boundary.size(), 4);
   ASSERT_EQ(boundary[0].size(), 4);
   
   for (int y = 0; y < cell.size(); ++y) {
     for (int x = 0; x < cell[0].size(); ++x) {
-      if (y > 0 && x > 0 && (y == 1 || x == 1)) ASSERT_EQ(boundary[y][x], 1);
-      else ASSERT_EQ(boundary[y][x], 0);
+      if (y == 0 || x == 0 || x == 2 && y == 2) ASSERT_EQ(boundary[y][x], 0);
+      else ASSERT_EQ(boundary[y][x], 1);
     }
   }
 }
@@ -145,6 +157,93 @@ TEST(NucleusForce_FindDistTests, CellOnBoundaryFindsCorrectDistance) {
   for (int y = 0; y < dist.size(); ++y) {
     for (int x = 0; x < dist[0].size(); ++x) {
       ASSERT_EQ(dist[y][x], true_dist[y][x]);
+    }
+  }
+}
+
+TEST(NucleusForce_FindForceTests, NoCellFindsNoForce) {
+  std::vector<std::vector<int>> cell(4, std::vector<int>(4));
+  cell[0] = {0, 0, 0, 0};
+  cell[1] = {0, 0, 0, 0};
+  cell[2] = {0, 0, 0, 0};
+  cell[3] = {0, 0, 0, 0};
+
+  std::vector<std::vector<double>> force = find_nucleus_force(cell, cell);
+
+  ASSERT_EQ(force.size(), 4);
+  ASSERT_EQ(force[0].size(), 4);
+
+  for (int y = 0; y < 4; ++y) {
+    for (int x = 0; x < 4; ++x) {
+      ASSERT_EQ(force[y][x], 0);
+    }
+  }
+}
+
+TEST(NucleusForce_FindForceTests, CellWithoutGivenForceFindsCorrectForce) {
+  std::vector<std::vector<int>> cell(4, std::vector<int>(4));
+  cell[0] = {0, 1, 1, 1};
+  cell[1] = {0, 1, 1, 1};
+  cell[2] = {0, 1, 0, 1};
+  cell[3] = {0, 1, 1, 1};
+  
+  std::vector<std::vector<int>> nucleus(4, std::vector<int>(4));
+  nucleus[0] = {0, 0, 0, 0};
+  nucleus[1] = {0, 0, 0, 0};
+  nucleus[2] = {0, 0, 1, 0};
+  nucleus[3] = {0, 0, 0, 0};
+
+  std::vector<std::vector<double>> force = find_nucleus_force(cell, nucleus);
+  
+  std::vector<std::vector<double>> true_force(4, std::vector<double>(4));
+  true_force[0] = {0, 0, 0, 0};
+  true_force[1] = {0, 0, 0, 0};
+  true_force[2] = {0, 0, 10, 0};
+  true_force[3] = {0, 0, 0, 0};
+
+  ASSERT_EQ(force.size(), 4);
+  ASSERT_EQ(force[0].size(), 4);
+
+  for (int y = 0; y < 4; ++y) {
+    for (int x = 0; x < 4; ++x) {
+      ASSERT_EQ(force[y][x], true_force[y][x]);
+    }
+  }
+}
+
+TEST(NucleusForce_FindForceTests, CellFindsCorrectForce) {
+  std::vector<std::vector<int>> cell(4, std::vector<int>(4));
+  cell[0] = {0, 1, 1, 1};
+  cell[1] = {0, 1, 0, 1};
+  cell[2] = {0, 1, 0, 1};
+  cell[3] = {0, 1, 1, 1};
+  
+  std::vector<std::vector<int>> nucleus(4, std::vector<int>(4));
+  nucleus[0] = {0, 0, 0, 0};
+  nucleus[1] = {0, 0, 1, 0};
+  nucleus[2] = {0, 0, 1, 0};
+  nucleus[3] = {0, 0, 0, 0};
+  
+  std::vector<std::vector<double>> force(4, std::vector<double>(4));
+  force[0] = {0, 0, 0, 0};
+  force[1] = {0, 0, 0, 0};
+  force[2] = {0, 0, 0, 0};
+  force[3] = {0, 1, 2, 1};
+
+  std::vector<std::vector<double>> found_force = find_nucleus_force(cell, nucleus, force);
+  
+  std::vector<std::vector<double>> true_force(4, std::vector<double>(4));
+  true_force[0] = {0, 0, 0, 0};
+  true_force[1] = {0, 0, 0, 0};
+  true_force[2] = {0, 0, 4, 0};
+  true_force[3] = {0, 0, 0, 0};
+
+  ASSERT_EQ(force.size(), 4);
+  ASSERT_EQ(force[0].size(), 4);
+
+  for (int y = 0; y < 4; ++y) {
+    for (int x = 0; x < 4; ++x) {
+      ASSERT_EQ(found_force[y][x], true_force[y][x]);
     }
   }
 }
