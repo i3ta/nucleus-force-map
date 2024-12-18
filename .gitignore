@@ -1,1 +1,4 @@
+# CMake files
 build/
+Testing/
+.cache/
