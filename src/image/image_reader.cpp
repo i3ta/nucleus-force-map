@@ -109,13 +109,3 @@ const std::unordered_map<cv::Vec3b, int> ColorMap::get_color_mapping() {
   }
   return color_mapping_;
 }
-
-bool ColorMap::operator==(const ColorMap& other) const {
-  return filepath_ == other.filepath_ &&
-         image_.total() == other.image_.total() &&
-         image_.type() == other.image_.type() &&
-         cv::countNonZero(image_ != other.image_) == 0 &&
-         color_map_ == other.color_map_ &&
-         color_index_ == other.color_index_ &&
-         color_mapping_ == other.color_mapping_;
-}

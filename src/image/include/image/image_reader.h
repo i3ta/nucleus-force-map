@@ -87,8 +87,6 @@ public:
     */
   void recolor(const std::unordered_map<cv::Vec3b, int> color_mapping);
 
-  bool operator==(const ColorMap& other) const;
-
 private:
   std::string filepath_; ///< Path to the input image file
   cv::Mat image_; ///< OpenCV matrix storing the image

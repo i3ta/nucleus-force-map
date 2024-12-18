@@ -22,4 +22,4 @@ target_link_libraries(image_tests
 
 file(COPY ${CMAKE_SOURCE_DIR}/tests/img DESTINATION ${CMAKE_BINARY_DIR}/tests)
 
-add_test(image_gtests image_tests)
+add_test(image_tests image_tests)
