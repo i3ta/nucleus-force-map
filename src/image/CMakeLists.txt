@@ -1,4 +1,4 @@
-add_library(image image_reader.cpp)
+add_library(image image_reader.cpp image_parse.cpp)
 
 # Find OpenCV
 find_package(OpenCV REQUIRED)
