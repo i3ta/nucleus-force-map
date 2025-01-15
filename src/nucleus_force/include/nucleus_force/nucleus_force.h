@@ -35,7 +35,7 @@ std::vector<std::vector<double>> find_nucleus_force(std::vector<std::vector<int>
                                                     std::vector<std::vector<int>> nucleus);
 
 /**
- * @brief Find the force on the nucleus due to the outer boundary of the cell
+ * @brief Find the force on the nucleus due to the pixels with applied force
  *
  * @param cell 2D array where 1 is the cell and 0 is everything else
  * @param nucleus 2D array where 1 is the nucleus and 0 is everything else
