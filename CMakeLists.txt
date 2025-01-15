@@ -13,4 +13,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 enable_testing()
 
 add_subdirectory(src)
+add_subdirectory(examples)
 add_subdirectory(tests)
+
+file(COPY ${CMAKE_SOURCE_DIR}/scripts DESTINATION ${CMAKE_BINARY_DIR}/examples)

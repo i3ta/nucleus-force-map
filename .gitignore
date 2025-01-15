@@ -2,3 +2,9 @@
 build/
 Testing/
 .cache/
+
+# Python files
+.venv/
+
+# MacOS files
+.DS_Store

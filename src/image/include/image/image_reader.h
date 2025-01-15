@@ -18,6 +18,7 @@ namespace std {
   };
 }
 
+namespace nucleusforce::image {
 /**
   * @brief A class that converts a png image to a 2D color map.
   */
@@ -93,6 +94,7 @@ private:
   std::vector<std::vector<int>> color_map_; ///< 2D int array storing each type of pixel
   std::unordered_map<int, cv::Vec3b> color_index_; ///< Mappings from int in array to BGR color
   std::unordered_map<cv::Vec3b, int> color_mapping_; ///< int number associated with each color
-};
+}; // Class ColorMap
+} // namespace img
 
 #endif // IMAGE_READER_H

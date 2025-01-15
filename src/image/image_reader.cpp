@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+namespace nucleusforce::image {
 ColorMap::ColorMap() {
   return;
 }
@@ -108,4 +109,5 @@ const std::unordered_map<cv::Vec3b, int> ColorMap::get_color_mapping() {
     throw std::invalid_argument("Image must be loaded before getting color mapping.");
   }
   return color_mapping_;
+}
 }

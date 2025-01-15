@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
+using namespace nucleusforce::image;
 namespace fs = std::filesystem;
 
 TEST(ImageReaderTest, NoArgumentConstructorInitializesNothing) {
