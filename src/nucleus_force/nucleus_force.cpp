@@ -159,6 +159,55 @@ std::vector<std::vector<double>> find_nucleus_force(std::vector<std::vector<int>
   return f;
 }
 
+std::vector<double> find_nucleus_centroid(std::vector<std::vector<int>> nucleus) {
+  // Find centroid of nucleus
+  double mx = 0;
+  double my = 0;
+  int m = 0;
+  for (int y = 0; y < nucleus.size(); ++y) {
+    for (int x = 0; x < nucleus[0].size(); ++x) {
+      if (nucleus[y][x] == 1) {
+        mx += x;
+        my += y;
+        m++;
+      }
+    }
+  }
+  mx /= m;
+  my /= m;
+
+  return {mx, my};
+}
+
+
+std::vector<double> find_force_vector(std::vector<std::vector<int>> nucleus,
+                                    std::vector<std::vector<double>> force) {
+std::vector<double> centroid = find_nucleus_centroid(nucleus);
+  double mx = centroid[0];
+  double my = centroid[1];
+
+  // Find net force
+  std::vector<double> f_net(2, 0);
+  for (int y = 0; y < nucleus.size(); ++y) {
+    for (int x = 0; x < nucleus[0].size(); ++x) {
+      if (nucleus[y][x] && force[y][x] != 0.0) {
+        double fy = my - y;
+        double fx = mx - x;
+        double f_mag = std::sqrt(fy * fy + fx * fx);
+        fy /= f_mag; // get unit displacement vector
+        fx /= f_mag;
+        fy *= force[y][x];
+        fx *= force[y][x];
+
+        f_net[0] += fx;
+        f_net[1] += fy;
+      }
+    }
+  }
+
+  return f_net;
+}
+
 inline std::pair<int, std::pair<int, int>> make_coord(int y, int x, int d) {
   return std::make_pair(d, std::make_pair(y, x));
 }

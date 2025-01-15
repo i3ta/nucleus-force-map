@@ -48,6 +48,26 @@ std::vector<std::vector<double>> find_nucleus_force(std::vector<std::vector<int>
                                                     std::vector<std::vector<double>> force);
 
 /**
+ * @brief Find the nucleus centroid
+ *
+ * @param nucleus nucleus
+ *
+ * @return vector of 2 elements (x, y) of the centroid
+ */
+std::vector<double> find_nucleus_centroid(std::vector<std::vector<int>> nucleus);
+
+/**
+ * @brief Find the force vector on the nucleus
+ *
+ * @param nucleus 2D array where 1 is the nucleus and 0 is anything else
+ * @param force 2D array of the force exerted on each pixel on the outer surface of the nucleus
+ *
+ * @return vector of 2 elements (x, y) of the net force on the nucleus
+ */
+std::vector<double> find_force_vector(std::vector<std::vector<int>> nucleus,
+                                      std::vector<std::vector<double>> force);
+
+/**
  * @brief Create a coord and distance pair
  *
  * @param y y coordinate
