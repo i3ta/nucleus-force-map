@@ -18,9 +18,9 @@ int main(int argc, char* argv[]) {
   // - Origins of force
   std::unordered_map<cv::Vec3b, int> color_mapping;
   color_mapping[cv::Vec3b(0, 0, 0)] = 0;
-  color_mapping[cv::Vec3b(71, 78, 147)] = 1;    // cell
-  color_mapping[cv::Vec3b(114, 186, 169)] = 2;  // nucleus
-  color_mapping[cv::Vec3b(71, 78, 147)] = 3;    // origins of force
+  color_mapping[cv::Vec3b(147, 78, 71)] = 1;    // cell
+  color_mapping[cv::Vec3b(169, 186, 114)] = 2;  // nucleus
+  color_mapping[cv::Vec3b(181, 231, 213)] = 3;  // origins of force
 
   nucleusforce::image::ColorMap cm(argv[1], color_mapping);
 
