@@ -1,4 +1,3 @@
-#include <cassert>
 #include <climits>
 #include <fstream>
 #include <nucleus_force/nucleus_force.h>
@@ -6,8 +5,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <utility>
-
-#include <iostream>
 
 namespace nucleusforce {
 const int dy[8] = {0, 1, 0, -1, 0, 1, 0, -1};
@@ -270,14 +267,6 @@ find_nucleus_force_layer(std::vector<std::vector<int>> cell,
           q.push(std::make_pair(i, j));
           queued[i][j] = true;
         }
-  }
-
-  std::cout << "force" << std::endl;
-  for (std::vector<double> row : f) {
-    for (double i : row) {
-      std::cout << i << " ";
-    }
-    std::cout << "\n";
   }
 
   return f;
