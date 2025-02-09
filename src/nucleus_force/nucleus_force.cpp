@@ -1,3 +1,4 @@
+#include <cassert>
 #include <climits>
 #include <fstream>
 #include <nucleus_force/nucleus_force.h>
@@ -5,6 +6,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <utility>
+
+#include <iostream>
 
 namespace nucleusforce {
 const int dy[8] = {0, 1, 0, -1, 0, 1, 0, -1};
@@ -184,39 +187,43 @@ find_nucleus_force_layer(std::vector<std::vector<int>> cell,
   const int ROWS = cell.size();
   const int COLS = cell[0].size();
 
-  auto removable = [cell, nucleus, ROWS, COLS](int r, int c) -> bool {
+  auto removable = [&cell, &nucleus, ROWS, COLS](int r, int c) -> bool {
     // Check if pixel can be removed
     if (nucleus[r][c] ||
         ((r > 0 && cell[r - 1][c]) && (c > 0 && cell[r][c - 1]) &&
-         !(r > 0 && c > 0 && cell[r - 1][c - 1])) ||
+         !cell[r - 1][c - 1]) ||
         ((r < ROWS - 1 && cell[r + 1][c]) && (c < COLS - 1 && cell[r][c + 1]) &&
-         !(r < ROWS - 1 && c < COLS - 1 && cell[r + 1][c + 1])) ||
+         !cell[r + 1][c + 1]) ||
         ((r > 0 && cell[r - 1][c]) && (c < COLS - 1 && cell[r][c + 1]) &&
-         !(r > 0 && c < COLS - 1 && cell[r - 1][c + 1])) ||
+         !cell[r - 1][c + 1]) ||
         ((r < ROWS - 1 && cell[r + 1][c]) && (c > 0 && cell[r][c - 1]) &&
-         !(r < ROWS - 1 && c > 0 && cell[r + 1][c - 1])) ||
+         !cell[r + 1][c - 1]) ||
         ((r > 0 && cell[r - 1][c]) && (r < ROWS - 1 && cell[r + 1][c]) &&
          !(c > 0 && cell[r][c - 1]) && !(c < COLS - 1 && cell[r][c + 1])) ||
         ((c > 0 && cell[r][c - 1]) && (c < COLS - 1 && cell[r][c + 1]) &&
-         !(r > 0 && cell[r - 1][c]) && !(r < ROWS - 1 && cell[r + 1][c]))) {
-      // Skip processing this point
+         !(r > 0 && cell[r - 1][c]) && !(r < ROWS - 1 && cell[r + 1][c])) ||
+        ((c > 0 && cell[r][c - 1]) && (c < COLS - 1 && cell[r][c + 1]) &&
+         (r > 0 && cell[r - 1][c]) && (r < ROWS - 1 && cell[r + 1][c]))) {
+      // Skip processing this pixel
       return false;
     } else {
       return true;
     }
   };
 
-  std::vector<std::vector<double>> f(ROWS, std::vector<double>(COLS));
+  std::vector<std::vector<double>> f(ROWS, std::vector<double>(COLS, 0.0));
   std::queue<std::pair<int, int>> q;
+  std::vector<std::vector<bool>> queued(ROWS, std::vector<bool>(COLS, false));
 
   // find starting points for queue and resulting force
   for (int r = 0; r < ROWS; ++r) {
     for (int c = 0; c < COLS; ++c) {
       if (force[r][c] > 0.0) {
         f[r][c] = force[r][c];
-        if (removable(r, c)) {
-          q.push(std::make_pair(r, c));
-        }
+      }
+      if (cell[r][c] && removable(r, c)) {
+        q.push(std::make_pair(r, c));
+        queued[r][c] = true;
       }
     }
   }
@@ -227,18 +234,23 @@ find_nucleus_force_layer(std::vector<std::vector<int>> cell,
     int c = q.front().second;
     q.pop();
 
+    if (!removable(r, c)) {
+      q.push(std::make_pair(r, c));
+      continue;
+    }
+
     // set cell[r][c] = 0 to prevent propagating to itself
     cell[r][c] = 0;
 
     // calculate number of pixels to propagate to
+    const int R_START = std::max(0, r - 1), R_END = std::min(ROWS - 1, r + 1);
+    const int C_START = std::max(0, c - 1), C_END = std::min(COLS - 1, c + 1);
+
     int prop_count = 0;
-    for (int i = std::max(0, r - 1); i < std::min(ROWS, r + 1); i++) {
-      for (int j = std::max(0, c - 1); j < std::min(COLS, c + 1); j++) {
-        if (cell[i][j] || nucleus[i][j]) {
+    for (int i = R_START; i <= R_END; i++)
+      for (int j = C_START; j <= C_END; j++)
+        if (cell[i][j])
           prop_count++;
-        }
-      }
-    }
 
     if (prop_count == 0) {
       continue;
@@ -246,22 +258,26 @@ find_nucleus_force_layer(std::vector<std::vector<int>> cell,
 
     // propagate force
     double prop_val = f[r][c] / prop_count;
-    for (int i = std::max(0, r - 1); i < std::min(ROWS, r + 1); i++) {
-      for (int j = std::max(0, c - 1); j < std::min(COLS, c + 1); j++) {
-        if (cell[i][j] || nucleus[i][j]) {
+    for (int i = R_START; i <= R_END; i++)
+      for (int j = C_START; j <= C_END; j++)
+        if (cell[i][j])
           f[i][j] += prop_val;
-        }
-      }
-    }
 
     // continue queue
-    for (int i = std::max(0, r - 1); i < std::min(ROWS, r + 1); i++) {
-      for (int j = std::max(0, c - 1); j < std::min(COLS, c + 1); j++) {
-        if (cell[i][j] && removable(i, j)) {
+    for (int i = R_START; i <= R_END; i++)
+      for (int j = C_START; j <= C_END; j++)
+        if (cell[i][j] && !queued[i][j] && removable(i, j)) {
           q.push(std::make_pair(i, j));
+          queued[i][j] = true;
         }
-      }
+  }
+
+  std::cout << "force" << std::endl;
+  for (std::vector<double> row : f) {
+    for (double i : row) {
+      std::cout << i << " ";
     }
+    std::cout << "\n";
   }
 
   return f;

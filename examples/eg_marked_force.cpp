@@ -26,9 +26,9 @@ int main(int argc, char* argv[]) {
 
   std::cout << "Read image into color map..." << std::endl;
 
-  std::vector<std::vector<int>> cell = nucleusforce::image::isolate_color(cm, cv::Vec3b(71, 78, 147));
-  std::vector<std::vector<int>> nucleus = nucleusforce::image::isolate_color(cm, cv::Vec3b(114, 186, 169));
-  std::vector<std::vector<int>> force_origin = nucleusforce::image::isolate_color(cm, cv::Vec3b(71, 78, 147));
+  std::vector<std::vector<int>> cell = nucleusforce::image::isolate_color(cm, cv::Vec3b(147, 78, 71));
+  std::vector<std::vector<int>> nucleus = nucleusforce::image::isolate_color(cm, cv::Vec3b(169, 186, 114));
+  std::vector<std::vector<int>> force_origin = nucleusforce::image::isolate_color(cm, cv::Vec3b(181, 231, 213));
 
   std::vector<std::vector<double>> init_force(force_origin.size(), std::vector<double>(force_origin[0].size()));
 
